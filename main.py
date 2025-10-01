@@ -53,7 +53,7 @@ async def main():
     # Запуск функции в цикле
     while True:
         await send_messages_within_time_range(sheet, chat_id, bot)
-        await asyncio.sleep(10)  # Проверяем каждые 10 секунд
+        await asyncio.sleep(90)  # Проверяем каждые 10 секунд
 
 
 if __name__ == "__main__":
