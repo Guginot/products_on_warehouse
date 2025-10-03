@@ -19,11 +19,23 @@ async def setup_google_sheets():
    scope = ["https://www.googleapis.com/auth/drive.readonly"]
 
 # Загружаем учетные данные из файла JSON
-   creds = ServiceAccountCredentials.from_json_keyfile_name(r'C:\Projects\products on warehouse\credentials.json', scope)
+   creds = ServiceAccountCredentials.from_json_keyfile_name(r'C:\Projects\products on warehouse\my-project-copy-end-file-f6ec472d11ef.json', scope)
 
 # Авторизуемся
    client = gspread.authorize(creds)
-   return client.open('Birthday of bot').sheet1
+   spreadsheet = client.open('Копия Выкуп со склада_мой вариант')
+   worksheet = spreadsheet.get_worksheet(5)
+
+   return worksheet
+
+async def filter_column_data(worksheet):
+    # Получаем все данные из нужного столбца (например, G, который имеет индекс 7)
+    column_data = worksheet.col_values(7)  # 7 - это индекс столбца G
+
+    # Применяем условия к значениям в столбце
+    filtered_values = [value for value in column_data if value.lower() == 'true']  # Сравниваем с 'true' в нижнем регистре
+
+    return filtered_values
 
 
 # Функция для отправки сообщений
@@ -33,13 +45,14 @@ async def send_messages_within_time_range(sheet, chat_id, bot):
     upper_bound = now + datetime.timedelta(minutes=1)
 
     # Получаем все данные из таблицы
-    messages = sheet.get_all_records()
 
-    for message in messages:
-        message_time = datetime.datetime.strptime(message['Дата'], '%d.%m.%Y %H:%M:%S')
+    messages = sheet.get_all_values()
+
+    for message in messages[1:]:
+        message_time = datetime.datetime.strptime(message[5], '%d.%m.%Y %H:%M:%S')
 
         if lower_bound <= message_time <= upper_bound:
-            await bot.send_message(chat_id=chat_id, text=message['Текст сообщения'])
+            await bot.send_message(chat_id=chat_id, text=message[6])
 
 
 async def main():
