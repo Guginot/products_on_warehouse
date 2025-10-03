@@ -29,15 +29,31 @@ async def setup_google_sheets():
    return worksheet
 
 
-
 async def filter_column_data(worksheet):
+    # Получаем все данные из таблицы
+    all_data = worksheet.get_all_values()
+
+    # Применяем условия к строкам
+    filtered_rows = []
+    for row in all_data[1:]:  # Пропускаем заголовок
+#        if len(row) < 8:  # Проверяем, чтобы избежать IndexError
+#            continue
+
+        # Условия:
+        if row[6] == 'TRUE':
+            filtered_rows.append(row)
+
+    return filtered_rows
+
+#async def filter_column_data(worksheet):
 
     # Получаем все данные из нужного столбца (например, G, который имеет индекс 7)
-   column_data = worksheet.col_values(6)  # 7 - это индекс столбца G
+#   column_data = worksheet.col_values(6)  # 7 - это индекс столбца G
 
     # Применяем условия к значениям в столбце
-   filtered_values = [value for value in column_data if value.lower() == 'true']
-   return filtered_values
+#   filtered_values = [value for value in column_data if value.lower() == 'TRUE']
+#   return filtered_values
+#    return filtered_values
 
 
 
@@ -48,17 +64,28 @@ async def send_messages_within_time_range(sheet, chat_id, bot):
     lower_bound = now - datetime.timedelta(minutes=1)
     upper_bound = now + datetime.timedelta(minutes=1)
 
-    # Получаем все данные из таблицы
+    filtered_data = await filter_column_data(sheet)
 
-    messages = sheet.get_all_values()
-
-    for message in messages[1:]:
-#        print(message[4])
-
-        message_time = datetime.datetime.strptime(message[4], '%d.%m.%Y %H:%M:%S')
+    for row in filtered_data:
+        message_time = datetime.datetime.strptime(row[4], '%d.%m.%Y %H:%M:%S')
 
         if lower_bound <= message_time <= upper_bound:
-            await bot.send_message(chat_id=chat_id, text=message[5])
+            await bot.send_message(chat_id=chat_id, text=row[5])
+
+
+
+
+    # Получаем все данные из таблицы
+
+#    messages = sheet.get_all_values()
+
+#    for message in messages[1:]:
+
+
+#        message_time = datetime.datetime.strptime(message[4], '%d.%m.%Y %H:%M:%S')
+
+#        if lower_bound <= message_time <= upper_bound:
+#            await bot.send_message(chat_id=chat_id, text=message[5])
 
 
 async def main():
@@ -72,7 +99,7 @@ async def main():
     # Запуск функции в цикле
     while True:
         await send_messages_within_time_range(sheet, chat_id, bot)
-        await asyncio.sleep(90)  # Проверяем каждые 10 секунд
+        await asyncio.sleep(30)  # Проверяем каждые 10 секунд
 
 
 if __name__ == "__main__":
