@@ -23,7 +23,7 @@ async def setup_google_sheets():
 
 # Авторизуемся
    client = gspread.authorize(creds)
-   spreadsheet = client.open('Копия Выкуп со склада_мой вариант')
+   spreadsheet = client.open('Выкуп со склада')
    worksheet = spreadsheet.get_worksheet(4)
 
    return worksheet
