@@ -61,8 +61,8 @@ async def filter_column_data(worksheet):
 # Функция для отправки сообщений
 async def send_messages_within_time_range(sheet, chat_id, bot):
     now = datetime.datetime.now()
-    lower_bound = now - datetime.timedelta(minutes=1)
-    upper_bound = now + datetime.timedelta(minutes=1)
+    lower_bound = now - datetime.timedelta(seconds=30)
+    upper_bound = now + datetime.timedelta(seconds=30)
 
     filtered_data = await filter_column_data(sheet)
 
@@ -99,7 +99,7 @@ async def main():
     # Запуск функции в цикле
     while True:
         await send_messages_within_time_range(sheet, chat_id, bot)
-        await asyncio.sleep(90)  # Проверяем каждые 10 секунд
+        await asyncio.sleep(31)  # Проверяем каждые 10 секунд
 
 
 if __name__ == "__main__":
