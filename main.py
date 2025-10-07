@@ -19,7 +19,7 @@ async def setup_google_sheets():
    scope = ["https://www.googleapis.com/auth/drive.readonly"]
 
 # Загружаем учетные данные из файла JSON
-   creds = ServiceAccountCredentials.from_json_keyfile_name(r'C:\Projects\products on warehouse\my-project-copy-end-file-f6ec472d11ef.json', scope)
+   creds = ServiceAccountCredentials.from_json_keyfile_name(r'C:\Projects\products on warehouse\credentials.json', scope)
 
 # Авторизуемся
    client = gspread.authorize(creds)
