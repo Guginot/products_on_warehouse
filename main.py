@@ -14,8 +14,8 @@ async def setup_google_sheets():
    scope = ["https://www.googleapis.com/auth/drive.readonly"]
 
 # Загружаем учетные данные из файла JSON
-   creds = ServiceAccountCredentials.from_json_keyfile_name(r'/home/products_on_warehouse/projects/products_on_warehouse/seventh-ripsaw-474517-e4-b36b477edbd5.json', scope)
-
+#   creds = ServiceAccountCredentials.from_json_keyfile_name(r'/home/products_on_warehouse/projects/products_on_warehouse/seventh-ripsaw-474517-e4-b36b477edbd5.json', scope)
+   creds = ServiceAccountCredentials.from_json_keyfile_name(r'C:\Projects\products on warehouse/seventh-ripsaw-474517-e4-b36b477edbd5.json', scope)
 # Авторизуемся
    client = gspread.authorize(creds)
    spreadsheet = client.open('Выкуп со склада')
@@ -47,8 +47,11 @@ async def filter_column_data(worksheet):
 # Функция для отправки сообщений
 async def send_messages_within_time_range(sheet, chat_id, bot):
     now = datetime.datetime.now()
-    lower_bound = now - datetime.timedelta(seconds=30)
-    upper_bound = now + datetime.timedelta(seconds=30)
+#    lower_bound = now - datetime.timedelta(seconds=30)
+#    upper_bound = now + datetime.timedelta(seconds=30)
+
+    lower_bound = now.replace(second=0, microsecond=0)
+    upper_bound = lower_bound + datetime.timedelta(minutes=1)
 
     filtered_data = await filter_column_data(sheet)
 
@@ -75,7 +78,10 @@ async def main():
     # Запуск функции в цикле
     while True:
         await send_messages_within_time_range(sheet, chat_id, bot)
-        await asyncio.sleep(45)  # Проверяем каждые 10 секунд
+#        await asyncio.sleep(45)  # Проверяем каждые 10 секунд
+        now = datetime.datetime.now()
+        sleep_time = 60 - now.second
+        await asyncio.sleep(sleep_time)
 
 
 if __name__ == "__main__":
