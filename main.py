@@ -1,8 +1,3 @@
-#!/usr/bin/python
-
-# This is a simple echo bot using the decorator mechanism.
-# It echoes any incoming text messages.
-
 import asyncio
 import os
 import gspread
@@ -19,11 +14,11 @@ async def setup_google_sheets():
    scope = ["https://www.googleapis.com/auth/drive.readonly"]
 
 # Загружаем учетные данные из файла JSON
-   creds = ServiceAccountCredentials.from_json_keyfile_name(r'C:\Projects\products on warehouse\credentials.json', scope)
+   creds = ServiceAccountCredentials.from_json_keyfile_name(r'/home/products_on_warehouse/projects/products_on_warehouse/seventh-ripsaw-474517-e4-b36b477edbd5.json', scope)
 
 # Авторизуемся
    client = gspread.authorize(creds)
-   spreadsheet = client.open('Копия Выкуп со склада_мой вариант')
+   spreadsheet = client.open('Выкуп со склада')
    worksheet = spreadsheet.get_worksheet(4)
 
    return worksheet
@@ -45,15 +40,6 @@ async def filter_column_data(worksheet):
 
     return filtered_rows
 
-#async def filter_column_data(worksheet):
-
-    # Получаем все данные из нужного столбца (например, G, который имеет индекс 7)
-#   column_data = worksheet.col_values(6)  # 7 - это индекс столбца G
-
-    # Применяем условия к значениям в столбце
-#   filtered_values = [value for value in column_data if value.lower() == 'TRUE']
-#   return filtered_values
-#    return filtered_values
 
 
 
@@ -75,17 +61,7 @@ async def send_messages_within_time_range(sheet, chat_id, bot):
 
 
 
-    # Получаем все данные из таблицы
 
-#    messages = sheet.get_all_values()
-
-#    for message in messages[1:]:
-
-
-#        message_time = datetime.datetime.strptime(message[4], '%d.%m.%Y %H:%M:%S')
-
-#        if lower_bound <= message_time <= upper_bound:
-#            await bot.send_message(chat_id=chat_id, text=message[5])
 
 
 async def main():
