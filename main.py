@@ -83,7 +83,7 @@ async def send_messages_within_time_range(sheet, chat_id, bot):
 async def main():
     # Инициализация бота
     bot = AsyncTeleBot(os.environ['TELEGRAM_TOKEN_WAREHOUSE'])
-    chat_id = '-4974550659'
+    chat_id = '-2582008990'
 
     # Настройка Google Sheets
     sheet = await setup_google_sheets()
