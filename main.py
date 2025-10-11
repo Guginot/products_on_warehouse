@@ -14,10 +14,11 @@ async def setup_google_sheets():
 
 # Загружаем учетные данные из файла JSON
    creds = ServiceAccountCredentials.from_json_keyfile_name(r'/home/products_on_warehouse/projects/products_on_warehouse/seventh-ripsaw-474517-e4-b36b477edbd5.json', scope)
-#   creds = ServiceAccountCredentials.from_json_keyfile_name(r'C:\Projects\products on warehouse/seventh-ripsaw-474517-e4-b36b477edbd5.json', scope)
+#   creds = ServiceAccountCredentials.from_json_keyfile_name(r'C:\Projects\products on warehouse\credentials.json', scope)
 # Авторизуемся
    client = gspread.authorize(creds)
    spreadsheet = client.open('Выкуп со склада')
+#   spreadsheet = client.open('Копия Выкуп со склада_мой вариант')
    worksheet = spreadsheet.get_worksheet(4)
 
    return worksheet
@@ -40,7 +41,8 @@ async def filter_column_data(worksheet):
     return filtered_rows
 
 
-
+# Добавьте в начало файла
+sent_messages_cache = set()
 
 
 # Функция для отправки сообщений
@@ -69,11 +71,15 @@ async def send_messages_within_time_range(sheet, chat_id, bot):
     filtered_data = await filter_column_data(sheet)
 
     for row in filtered_data:
-#        message_time = datetime.datetime.strptime(row[4], '%d.%m.%Y %H:%M:%S')
         message_time = datetime.strptime(row[4], '%d.%m.%Y %H:%M:%S')
-        if lower_bound <= message_time <= upper_bound:
-            await bot.send_message(chat_id=chat_id, text=row[5])
+# Создаем уникальный идентификатор для сообщения
+        message_id = f"{row[4]}_{row[5]}"  # время + текст
 
+        if (lower_bound <= message_time <= upper_bound and
+            message_id not in sent_messages_cache):
+
+            await bot.send_message(chat_id=chat_id, text=row[5])
+            sent_messages_cache.add(message_id)  # помечаем как отправленное
 
 
 
@@ -84,6 +90,7 @@ async def main():
     # Инициализация бота
     bot = AsyncTeleBot(os.environ['TELEGRAM_TOKEN_WAREHOUSE'])
     chat_id = '-1002582008990'
+    #    chat_id = '-4974550659'
 
     # Настройка Google Sheets
     sheet = await setup_google_sheets()
